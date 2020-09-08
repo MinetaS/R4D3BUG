@@ -3,5 +3,7 @@
 * [Home](README.md)
 * [How to Use Gitbook](how-to-use-gitbook.md)
 * [Kernel Synchronization](kernel-sync/README.md)
-  * [Spinlock](kernel-sync/kernel-sync-spinlock.md)
+  * [Spinlock](kernel-sync/kernel-sync-spinlock/README.md)
+    * [spin\_lock\_init](kernel-sync/kernel-sync-spinlock/spin_lock_init.md)
+    * [spin\_lock](kernel-sync/kernel-sync-spinlock/spin_lock.md)
 

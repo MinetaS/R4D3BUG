@@ -116,7 +116,7 @@ static inline void __raw_spin_lock_bh(raw_spinlock_t *lock)
 }
 ```
 
-`__raw_spin_lock` 과 같은 기능을 하지만, `preempt_disable` 대신 `__local_bh_disable_ip` 를 사용해 SoftIRQ도 막는 것을 볼 수 있습니다.
+`__raw_spin_lock` 과 같은 기능을 하지만, `preempt_disable` 대신 `__local_bh_disable_ip` 를 사용해 SoftIRQ도 막는 것을 볼 수 있습니다. 다음으로 `LOCK_CONTENDED` 를 사용해 `do_raw_spin_lock` 함수를 호출합니다.
 
 
 

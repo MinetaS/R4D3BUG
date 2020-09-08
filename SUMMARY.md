@@ -7,5 +7,6 @@
     * [spin\_lock\_init](kernel-sync/kernel-sync-spinlock/spin_lock_init.md)
     * [spin\_lock](kernel-sync/kernel-sync-spinlock/spin_lock.md)
     * [spin\_lock\_bh](kernel-sync/kernel-sync-spinlock/spin_lock_bh.md)
+    * [spin\_lock\_irq](kernel-sync/kernel-sync-spinlock/spin_lock_irq.md)
   * [Queued Spinlock](kernel-sync/queued-spinlock.md)
 

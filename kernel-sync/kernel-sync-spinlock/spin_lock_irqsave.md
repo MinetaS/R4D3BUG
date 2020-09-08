@@ -214,5 +214,5 @@ SMP: `spin_lock_irqsave` &gt; `_raw_spin_lock_irqsave` &gt; `__raw_spin_lock_irq
 
 UP: `spin_lock_irq` &gt; `_raw_spin_lock_irq` &gt; `__LOCK_IRQSAVE` &gt; `__LOCK` 
 
-* EFLAGS/RFLAGS 레지스터 값을 유지하기 위해, 현재의 FLAGS 레지스터 값이 리턴됩니다. 이 값은 이후 FLAGS를 복원할 때 사용됩니다.
+* EFLAGS/RFLAGS 레지스터 값을 유지하기 위해, 현재의 FLAGS 레지스터 값이 리턴됩니다. 이 값은 이후 `spin_unlock_irqrestore` 에서 레지스를 복원할 때 사용됩니다.
 

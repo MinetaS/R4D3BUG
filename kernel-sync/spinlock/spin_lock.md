@@ -7,7 +7,7 @@
 ```c
 static __always_inline void spin_lock(spinlock_t *lock)
 {
-	raw_spin_lock(&lock->rlock);
+        raw_spin_lock(&lock->rlock);
 }
 ```
 
@@ -30,7 +30,7 @@ static __always_inline void spin_lock(spinlock_t *lock)
 > /include/linux/spinlock\_api\_up.h:58
 
 ```c
-#define _raw_spin_lock(lock)			__LOCK(lock)
+#define _raw_spin_lock(lock)                    __LOCK(lock)
 ```
 
 `_raw_spin_lock` 이 바로 `__LOCK` 매크로로 연결됩니다. 이 매크로 역시 같은 파일 안에 정의되어 있습니다.
@@ -71,7 +71,7 @@ Symmetric multiprocessor \(SMP\) 환경인 경우 spinlock\_api\_smp.h 안의 �
 #ifndef CONFIG_INLINE_SPIN_LOCK
 void __lockfunc _raw_spin_lock(raw_spinlock_t *lock)
 {
-	__raw_spin_lock(lock);
+        __raw_spin_lock(lock);
 }
 EXPORT_SYMBOL(_raw_spin_lock);
 #endif
@@ -84,9 +84,9 @@ EXPORT_SYMBOL(_raw_spin_lock);
 ```c
 static inline void __raw_spin_lock(raw_spinlock_t *lock)
 {
-	preempt_disable();
-	spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
-	LOCK_CONTENDED(lock, do_raw_spin_trylock, do_raw_spin_lock);
+        preempt_disable();
+        spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
+        LOCK_CONTENDED(lock, do_raw_spin_trylock, do_raw_spin_lock);
 }
 ```
 
@@ -98,27 +98,27 @@ UP 환경의 `__LOCK` 과 비슷하게, `preempt_disable` 매크로를 사용해
 
 ```text
 config DEBUG_LOCK_ALLOC
-	bool "Lock debugging: detect incorrect freeing of live locks"
-	depends on DEBUG_KERNEL && LOCK_DEBUGGING_SUPPORT
-	select DEBUG_SPINLOCK
-	select DEBUG_MUTEXES
-	select DEBUG_RT_MUTEXES if RT_MUTEXES
-	select LOCKDEP
-	help
-	 This feature will check whether any held lock (spinlock, rwlock,
-	 mutex or rwsem) is incorrectly freed by the kernel, via any of the
-	 memory-freeing routines (kfree(), kmem_cache_free(), free_pages(),
-	 vfree(), etc.), whether a live lock is incorrectly reinitialized via
-	 spin_lock_init()/mutex_init()/etc., or whether there is any lock
-	 held during task exit.
-	
-	config LOCKDEP
-	bool
-	depends on DEBUG_KERNEL && LOCK_DEBUGGING_SUPPORT
-	select STACKTRACE
-	select FRAME_POINTER if !MIPS && !PPC && !ARM && !S390 && !MICROBLAZE && !ARC && !X86
-	select KALLSYMS
-	select KALLSYMS_ALL
+        bool "Lock debugging: detect incorrect freeing of live locks"
+        depends on DEBUG_KERNEL && LOCK_DEBUGGING_SUPPORT
+        select DEBUG_SPINLOCK
+        select DEBUG_MUTEXES
+        select DEBUG_RT_MUTEXES if RT_MUTEXES
+        select LOCKDEP
+        help
+         This feature will check whether any held lock (spinlock, rwlock,
+         mutex or rwsem) is incorrectly freed by the kernel, via any of the
+         memory-freeing routines (kfree(), kmem_cache_free(), free_pages(),
+         vfree(), etc.), whether a live lock is incorrectly reinitialized via
+         spin_lock_init()/mutex_init()/etc., or whether there is any lock
+         held during task exit.
+        
+        config LOCKDEP
+        bool
+        depends on DEBUG_KERNEL && LOCK_DEBUGGING_SUPPORT
+        select STACKTRACE
+        select FRAME_POINTER if !MIPS && !PPC && !ARM && !S390 && !MICROBLAZE && !ARC && !X86
+        select KALLSYMS
+        select KALLSYMS_ALL
 ```
 
 `CONFIG_DEBUG_LOCK_ALLOC` 과 `CONFIG_LOCKDEP` 는 모두 `DEBUG_KERNEL && LOCK_DEBUGGING_SUPPORT` 에 따라 값이 결정되기 때문에 항상 같은 값을 가집니다. 다음으로 아래의 코드를 살펴보겠습니다.
@@ -126,12 +126,12 @@ config DEBUG_LOCK_ALLOC
 > /include/linux/lockdep.h:493
 
 ```c
-# define lock_acquire(l, s, t, r, c, n, i)	do { } while (0)
-# define lock_release(l, i)			do { } while (0)
-# define lock_downgrade(l, i)			do { } while (0)
-# define lock_set_class(l, n, k, s, i)		do { } while (0)
-# define lock_set_subclass(l, s, i)		do { } while (0)
-# define lockdep_init()				do { } while (0)
+# define lock_acquire(l, s, t, r, c, n, i)      do { } while (0)
+# define lock_release(l, i)                     do { } while (0)
+# define lock_downgrade(l, i)                   do { } while (0)
+# define lock_set_class(l, n, k, s, i)          do { } while (0)
+# define lock_set_subclass(l, s, i)             do { } while (0)
+# define lockdep_init()                         do { } while (0)
 ```
 
 위의 매크로는 `CONFIG_LOCKDEP` 가 false 일 때 정의됩니다. 따라서  `CONFIG_DEBUG_LOCK_ALLOC` 이 정의되지 않았다면 `spin_acquire` 매크로는 아무 동작도 하지 않는 빈 코드로 바뀌게 됩니다. 마찬가지로, 여기서는 디버깅 루틴을 살펴보지 않기 때문에 실제 `lock_acquire` 함수의 동작에 대해서는 설명을 건너뛰겠습니다.
@@ -141,13 +141,13 @@ config DEBUG_LOCK_ALLOC
 > /include/linux/lockdep.h:584
 
 ```c
-#define LOCK_CONTENDED(_lock, try, lock)			\
-do {								\
-	if (!try(_lock)) {					\
-		lock_contended(&(_lock)->dep_map, _RET_IP_);	\
-		lock(_lock);					\
-	}							\
-	lock_acquired(&(_lock)->dep_map, _RET_IP_);			\
+#define LOCK_CONTENDED(_lock, try, lock)                        \
+do {                                                            \
+        if (!try(_lock)) {                                      \
+                lock_contended(&(_lock)->dep_map, _RET_IP_);    \
+                lock(_lock);                                    \
+        }                                                       \
+        lock_acquired(&(_lock)->dep_map, _RET_IP_);                     \
 } while (0)
 ```
 
@@ -157,7 +157,7 @@ do {								\
 
 ```c
 #define LOCK_CONTENDED(_lock, try, lock) \
-	lock(_lock)
+        lock(_lock)
 ```
 
 `try` 인자를 사용하지 않고, `lock(_lock)` 을 호출합니다. 따라서 `do_raw_spin_trylock` 함수는 실제로 호출되지 않으며 `do_raw_spin_lock(lock)` 이 호출됩니다.
@@ -167,9 +167,9 @@ do {								\
 ```c
 static inline void do_raw_spin_lock(raw_spinlock_t *lock) __acquires(lock)
 {
-	__acquire(lock);
-	arch_spin_lock(&lock->raw_lock);
-	mmiowb_spin_lock();
+        __acquire(lock);
+        arch_spin_lock(&lock->raw_lock);
+        mmiowb_spin_lock();
 }
 ```
 
@@ -178,7 +178,7 @@ static inline void do_raw_spin_lock(raw_spinlock_t *lock) __acquires(lock)
 > /include/asm-generic/qspinlock.h:112
 
 ```c
-#define arch_spin_lock(l)		queued_spin_lock(l)
+#define arch_spin_lock(l)               queued_spin_lock(l)
 ```
 
 `arch_spin_lock` 은 `queued_spin_lock` 을 사용합니다.
@@ -188,12 +188,12 @@ static inline void do_raw_spin_lock(raw_spinlock_t *lock) __acquires(lock)
 ```c
 static __always_inline void queued_spin_lock(struct qspinlock *lock)
 {
-	u32 val = 0;
+        u32 val = 0;
 
-	if (likely(atomic_try_cmpxchg_acquire(&lock->val, &val, _Q_LOCKED_VAL)))
-		return;
+        if (likely(atomic_try_cmpxchg_acquire(&lock->val, &val, _Q_LOCKED_VAL)))
+                return;
 
-	queued_spin_lock_slowpath(lock, val);
+        queued_spin_lock_slowpath(lock, val);
 }
 ```
 

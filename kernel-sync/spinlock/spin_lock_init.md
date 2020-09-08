@@ -7,20 +7,20 @@
 ```c
 #ifdef CONFIG_DEBUG_SPINLOCK
 
-# define spin_lock_init(lock)					\
-do {								\
-	static struct lock_class_key __key;			\
-								\
-	__raw_spin_lock_init(spinlock_check(lock),		\
-			     #lock, &__key, LD_WAIT_CONFIG);	\
+# define spin_lock_init(lock)                                   \
+do {                                                            \
+        static struct lock_class_key __key;                     \
+                                                                \
+        __raw_spin_lock_init(spinlock_check(lock),              \
+                             #lock, &__key, LD_WAIT_CONFIG);    \
 } while (0)
 
 #else
 
-# define spin_lock_init(_lock)			\
-do {						\
-	spinlock_check(_lock);			\
-	*(_lock) = __SPIN_LOCK_UNLOCKED(_lock);	\
+# define spin_lock_init(_lock)                  \
+do {                                            \
+        spinlock_check(_lock);                  \
+        *(_lock) = __SPIN_LOCK_UNLOCKED(_lock); \
 } while (0)
 
 #endif
@@ -35,7 +35,7 @@ do {						\
 ```c
 static __always_inline raw_spinlock_t *spinlock_check(spinlock_t *lock)
 {
-	return &lock->rlock;
+        return &lock->rlock;
 }
 ```
 
@@ -44,17 +44,17 @@ static __always_inline raw_spinlock_t *spinlock_check(spinlock_t *lock)
 > /include/linux/spinlock\_types.h:85
 
 ```c
-#define ___SPIN_LOCK_INITIALIZER(lockname)	\
-	{					\
-	.raw_lock = __ARCH_SPIN_LOCK_UNLOCKED,	\
-	SPIN_DEBUG_INIT(lockname)		\
-	SPIN_DEP_MAP_INIT(lockname) }
+#define ___SPIN_LOCK_INITIALIZER(lockname)      \
+        {                                       \
+        .raw_lock = __ARCH_SPIN_LOCK_UNLOCKED,  \
+        SPIN_DEBUG_INIT(lockname)               \
+        SPIN_DEP_MAP_INIT(lockname) }
 
 #define __SPIN_LOCK_INITIALIZER(lockname) \
-	{ { .rlock = ___SPIN_LOCK_INITIALIZER(lockname) } }
+        { { .rlock = ___SPIN_LOCK_INITIALIZER(lockname) } }
 
 #define __SPIN_LOCK_UNLOCKED(lockname) \
-	(spinlock_t) __SPIN_LOCK_INITIALIZER(lockname)
+        (spinlock_t) __SPIN_LOCK_INITIALIZER(lockname)
 ```
 
 다음은 `__SPIN_LOCK_UNLOCKED` 매크로입니다. `__SPIN_LOCK_INITIALIZER` 매크로를 사용하고 `spinlock_t` 타입으로 변환합니다.

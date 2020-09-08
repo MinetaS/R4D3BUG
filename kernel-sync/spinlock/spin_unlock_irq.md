@@ -7,14 +7,14 @@
 ```c
 static __always_inline void spin_unlock_irq(spinlock_t *lock)
 {
-	raw_spin_unlock_irq(&lock->rlock);
+        raw_spin_unlock_irq(&lock->rlock);
 }
 ```
 
 > /include/linux/spinlock.h:284
 
 ```c
-#define raw_spin_unlock_irq(lock)	_raw_spin_unlock_irq(lock)
+#define raw_spin_unlock_irq(lock)       _raw_spin_unlock_irq(lock)
 ```
 
 
@@ -24,7 +24,7 @@ static __always_inline void spin_unlock_irq(spinlock_t *lock)
 > /include/linux/spinlock\_api\_up.h:81
 
 ```c
-#define _raw_spin_unlock_irq(lock)		__UNLOCK_IRQ(lock)
+#define _raw_spin_unlock_irq(lock)              __UNLOCK_IRQ(lock)
 ```
 
 `_raw_spin_unlock_irq` 은 `__UNLOCK_IRQ` 으로 표현됩니다.
@@ -41,7 +41,7 @@ static __always_inline void spin_unlock_irq(spinlock_t *lock)
 > /include/linux/irqflags.h:197
 
 ```c
-#define local_irq_enable()	do { raw_local_irq_enable(); } while (0)
+#define local_irq_enable()      do { raw_local_irq_enable(); } while (0)
 ```
 
 `local_irq_enable` 은 `raw_local_irq_enable` 로 치환됩니다.
@@ -49,7 +49,7 @@ static __always_inline void spin_unlock_irq(spinlock_t *lock)
 > /include/linux/irqflags.h:137
 
 ```c
-#define raw_local_irq_enable()		arch_local_irq_enable()
+#define raw_local_irq_enable()          arch_local_irq_enable()
 ```
 
 `raw_local_irq_enable` 은 다시 `arch_local_irq_enable` 로 치환됩니다.
@@ -59,7 +59,7 @@ static __always_inline void spin_unlock_irq(spinlock_t *lock)
 ```c
 static __always_inline void arch_local_irq_enable(void)
 {
-	native_irq_enable();
+        native_irq_enable();
 }
 ```
 
@@ -70,7 +70,7 @@ x86에서, `arch_local_irq_enable` 함수는 `native_irq_enable` 함수를 호�
 ```c
 static __always_inline void native_irq_enable(void)
 {
-	asm volatile("sti": : :"memory");
+        asm volatile("sti": : :"memory");
 }
 ```
 
@@ -94,7 +94,7 @@ static __always_inline void native_irq_enable(void)
 #ifndef CONFIG_INLINE_SPIN_UNLOCK_IRQ
 void __lockfunc _raw_spin_unlock_irq(raw_spinlock_t *lock)
 {
-	__raw_spin_unlock_irq(lock);
+        __raw_spin_unlock_irq(lock);
 }
 EXPORT_SYMBOL(_raw_spin_unlock_irq);
 #endif
@@ -107,10 +107,10 @@ EXPORT_SYMBOL(_raw_spin_unlock_irq);
 ```c
 static inline void __raw_spin_unlock_irq(raw_spinlock_t *lock)
 {
-	spin_release(&lock->dep_map, _RET_IP_);
-	do_raw_spin_unlock(lock);
-	local_irq_enable();
-	preempt_enable();
+        spin_release(&lock->dep_map, _RET_IP_);
+        do_raw_spin_unlock(lock);
+        local_irq_enable();
+        preempt_enable();
 }
 ```
 

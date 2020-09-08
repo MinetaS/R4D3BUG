@@ -7,14 +7,14 @@
 ```c
 static __always_inline void spin_lock_irq(spinlock_t *lock)
 {
-	raw_spin_lock_irq(&lock->rlock);
+        raw_spin_lock_irq(&lock->rlock);
 }
 ```
 
 > /include/linux/spinlock.h:281
 
 ```c
-#define raw_spin_lock_irq(lock)		_raw_spin_lock_irq(lock)
+#define raw_spin_lock_irq(lock)         _raw_spin_lock_irq(lock)
 ```
 
 
@@ -24,7 +24,7 @@ static __always_inline void spin_lock_irq(spinlock_t *lock)
 > /include/linux/spinlock\_api\_up.h:65
 
 ```c
-#define _raw_spin_lock_irq(lock)		__LOCK_IRQ(lock)
+#define _raw_spin_lock_irq(lock)                __LOCK_IRQ(lock)
 ```
 
 > /include/linux/spinlock\_api\_up.h:36
@@ -39,7 +39,7 @@ static __always_inline void spin_lock_irq(spinlock_t *lock)
 > /include/linux/irqflags.h:198
 
 ```c
-#define local_irq_disable()	do { raw_local_irq_disable(); } while (0)
+#define local_irq_disable()     do { raw_local_irq_disable(); } while (0)
 ```
 
 `CONFIG_TRACE_IRQFLAGS` 가 정의되지 않았을 때 `raw_local_irq_disable` 매크로만을 사용합니다.
@@ -47,7 +47,7 @@ static __always_inline void spin_lock_irq(spinlock_t *lock)
 > /include/linux/irqflags.h:136
 
 ```c
-#define raw_local_irq_disable()		arch_local_irq_disable()
+#define raw_local_irq_disable()         arch_local_irq_disable()
 ```
 
 `raw_local_irq_disable` 은 다시 `arch_local_irq_disable` 을 호출합니다.
@@ -57,7 +57,7 @@ static __always_inline void spin_lock_irq(spinlock_t *lock)
 ```c
 static __always_inline void arch_local_irq_disable(void)
 {
-	native_irq_disable();
+        native_irq_disable();
 }
 ```
 
@@ -68,7 +68,7 @@ x86에서, `arch_local_irq_disable` 은 `native_irq_disable` 함수를 호출합
 ```c
 static __always_inline void native_irq_disable(void)
 {
-	asm volatile("cli": : :"memory");
+        asm volatile("cli": : :"memory");
 }
 ```
 
@@ -92,7 +92,7 @@ static __always_inline void native_irq_disable(void)
 #ifndef CONFIG_INLINE_SPIN_LOCK_IRQ
 void __lockfunc _raw_spin_lock_irq(raw_spinlock_t *lock)
 {
-	__raw_spin_lock_irq(lock);
+        __raw_spin_lock_irq(lock);
 }
 EXPORT_SYMBOL(_raw_spin_lock_irq);
 #endif
@@ -105,10 +105,10 @@ EXPORT_SYMBOL(_raw_spin_lock_irq);
 ```c
 static inline void __raw_spin_lock_irq(raw_spinlock_t *lock)
 {
-	local_irq_disable();
-	preempt_disable();
-	spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
-	LOCK_CONTENDED(lock, do_raw_spin_trylock, do_raw_spin_lock);
+        local_irq_disable();
+        preempt_disable();
+        spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
+        LOCK_CONTENDED(lock, do_raw_spin_trylock, do_raw_spin_lock);
 }
 ```
 

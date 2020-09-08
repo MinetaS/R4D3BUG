@@ -7,7 +7,7 @@
 ```c
 static __always_inline void spin_lock_bh(spinlock_t *lock)
 {
-	raw_spin_lock_bh(&lock->rlock);
+        raw_spin_lock_bh(&lock->rlock);
 }
 ```
 
@@ -16,7 +16,7 @@ static __always_inline void spin_lock_bh(spinlock_t *lock)
 > /include/linux/spinlock.h:282
 
 ```c
-#define raw_spin_lock_bh(lock)		_raw_spin_lock_bh(lock)
+#define raw_spin_lock_bh(lock)          _raw_spin_lock_bh(lock)
 ```
 
 마찬가지로 `_raw_spin_lock_bh` 을 호출합니다.
@@ -28,7 +28,7 @@ static __always_inline void spin_lock_bh(spinlock_t *lock)
 > /include/linux/spinlock\_api\_up.h:62
 
 ```c
-#define _raw_spin_lock_bh(lock)			__LOCK_BH(lock)
+#define _raw_spin_lock_bh(lock)                 __LOCK_BH(lock)
 ```
 
 싱글 프로세서 환경이 `__LOCK_BH` 매크로를 사용합니다.
@@ -47,8 +47,8 @@ static __always_inline void spin_lock_bh(spinlock_t *lock)
 ```c
 static __always_inline void __local_bh_disable_ip(unsigned long ip, unsigned int cnt)
 {
-	preempt_count_add(cnt);
-	barrier();
+        preempt_count_add(cnt);
+        barrier();
 }
 ```
 
@@ -92,12 +92,13 @@ static __always_inline void __local_bh_disable_ip(unsigned long ip, unsigned int
 #endif
 ```
 
-> /kernel/locking/spinlock.c:173
+> /kernel/locking/spinlock.c:172
 
 ```c
+#ifndef CONFIG_INLINE_SPIN_LOCK_BH
 void __lockfunc _raw_spin_lock_bh(raw_spinlock_t *lock)
 {
-	__raw_spin_lock_bh(lock);
+        __raw_spin_lock_bh(lock);
 }
 EXPORT_SYMBOL(_raw_spin_lock_bh);
 #endif
@@ -110,9 +111,9 @@ EXPORT_SYMBOL(_raw_spin_lock_bh);
 ```c
 static inline void __raw_spin_lock_bh(raw_spinlock_t *lock)
 {
-	__local_bh_disable_ip(_RET_IP_, SOFTIRQ_LOCK_OFFSET);
-	spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
-	LOCK_CONTENDED(lock, do_raw_spin_trylock, do_raw_spin_lock);
+        __local_bh_disable_ip(_RET_IP_, SOFTIRQ_LOCK_OFFSET);
+        spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
+        LOCK_CONTENDED(lock, do_raw_spin_trylock, do_raw_spin_lock);
 }
 ```
 

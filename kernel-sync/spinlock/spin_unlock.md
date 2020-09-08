@@ -7,14 +7,14 @@
 ```c
 static __always_inline void spin_unlock(spinlock_t *lock)
 {
-	raw_spin_unlock(&lock->rlock);
+        raw_spin_unlock(&lock->rlock);
 }
 ```
 
 > /include/linux/spinlock.h:283
 
 ```c
-#define raw_spin_unlock(lock)		_raw_spin_unlock(lock)
+#define raw_spin_unlock(lock)           _raw_spin_unlock(lock)
 ```
 
 
@@ -24,7 +24,7 @@ static __always_inline void spin_unlock(spinlock_t *lock)
 > /include/linux/spinlock\_api\_up.h:75
 
 ```c
-#define _raw_spin_unlock(lock)			__UNLOCK(lock)
+#define _raw_spin_unlock(lock)                  __UNLOCK(lock)
 ```
 
 `_raw_spin_unlock` 매크로가 `__UNLOCK` 으로 치환됩니다.
@@ -59,7 +59,7 @@ static __always_inline void spin_unlock(spinlock_t *lock)
 #ifdef CONFIG_UNINLINE_SPIN_UNLOCK
 void __lockfunc _raw_spin_unlock(raw_spinlock_t *lock)
 {
-	__raw_spin_unlock(lock);
+        __raw_spin_unlock(lock);
 }
 EXPORT_SYMBOL(_raw_spin_unlock);
 #endif
@@ -72,9 +72,9 @@ EXPORT_SYMBOL(_raw_spin_unlock);
 ```c
 static inline void __raw_spin_unlock(raw_spinlock_t *lock)
 {
-	spin_release(&lock->dep_map, _RET_IP_);
-	do_raw_spin_unlock(lock);
-	preempt_enable();
+        spin_release(&lock->dep_map, _RET_IP_);
+        do_raw_spin_unlock(lock);
+        preempt_enable();
 }
 ```
 
@@ -85,9 +85,9 @@ static inline void __raw_spin_unlock(raw_spinlock_t *lock)
 ```c
 static inline void do_raw_spin_unlock(raw_spinlock_t *lock) __releases(lock)
 {
-	mmiowb_spin_unlock();
-	arch_spin_unlock(&lock->raw_lock);
-	__release(lock);
+        mmiowb_spin_unlock();
+        arch_spin_unlock(&lock->raw_lock);
+        __release(lock);
 }
 ```
 
@@ -96,7 +96,7 @@ static inline void do_raw_spin_unlock(raw_spinlock_t *lock) __releases(lock)
 > /include/asm-generic/qspinlock.h:114
 
 ```c
-#define arch_spin_unlock(l)		queued_spin_unlock(l)
+#define arch_spin_unlock(l)             queued_spin_unlock(l)
 ```
 
 x86에서 `arch_spin_unlock` 은 `queued_spin_unlock` 을 의미합니다. `queued_spin_unlock` 은 Queued Spinlock 챕터에서 설명하도록 하겠습니다.

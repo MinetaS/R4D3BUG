@@ -5,9 +5,9 @@
 > /include/linux/spinlock.h:386
 
 ```c
-#define spin_lock_irqsave_nested(lock, flags, subclass)			\
-do {									\
-	raw_spin_lock_irqsave_nested(spinlock_check(lock), flags, subclass); \
+#define spin_lock_irqsave_nested(lock, flags, subclass)                 \
+do {                                                                    \
+        raw_spin_lock_irqsave_nested(spinlock_check(lock), flags, subclass); \
 } while (0)
 ```
 
@@ -21,17 +21,17 @@ do {									\
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
 ...
 #else
-#define raw_spin_lock_irqsave_nested(lock, flags, subclass)		\
-	do {								\
-		typecheck(unsigned long, flags);			\
-		flags = _raw_spin_lock_irqsave(lock);			\
-	} while (0)
+#define raw_spin_lock_irqsave_nested(lock, flags, subclass)             \
+        do {                                                            \
+                typecheck(unsigned long, flags);                        \
+                flags = _raw_spin_lock_irqsave(lock);                   \
+        } while (0)
 #endif
 
 #else
 ...
-#define raw_spin_lock_irqsave_nested(lock, flags, subclass)	\
-	raw_spin_lock_irqsave(lock, flags)
+#define raw_spin_lock_irqsave_nested(lock, flags, subclass)     \
+        raw_spin_lock_irqsave(lock, flags)
 
 #endif
 

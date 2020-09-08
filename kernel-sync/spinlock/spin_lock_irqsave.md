@@ -7,9 +7,9 @@
 > /include/linux/spinlock.h:381
 
 ```c
-#define spin_lock_irqsave(lock, flags)				\
-do {								\
-	raw_spin_lock_irqsave(spinlock_check(lock), flags);	\
+#define spin_lock_irqsave(lock, flags)                          \
+do {                                                            \
+        raw_spin_lock_irqsave(spinlock_check(lock), flags);     \
 } while (0)
 ```
 
@@ -18,19 +18,19 @@ do {								\
 ```c
 #if defined(CONFIG_SMP) || defined(CONFIG_DEBUG_SPINLOCK)
 
-#define raw_spin_lock_irqsave(lock, flags)			\
-	do {						\
-		typecheck(unsigned long, flags);	\
-		flags = _raw_spin_lock_irqsave(lock);	\
-	} while (0)
+#define raw_spin_lock_irqsave(lock, flags)                      \
+        do {                                            \
+                typecheck(unsigned long, flags);        \
+                flags = _raw_spin_lock_irqsave(lock);   \
+        } while (0)
 ...
 #else
 
-#define raw_spin_lock_irqsave(lock, flags)		\
-	do {						\
-		typecheck(unsigned long, flags);	\
-		_raw_spin_lock_irqsave(lock, flags);	\
-	} while (0)
+#define raw_spin_lock_irqsave(lock, flags)              \
+        do {                                            \
+                typecheck(unsigned long, flags);        \
+                _raw_spin_lock_irqsave(lock, flags);    \
+        } while (0)
 ...
 #endif
 ```
@@ -44,7 +44,7 @@ SMP 환경인 경우 `flags` 에 `_raw_spin_lock_irqsave` 의 결과값을 저�
 > /include/linux/spinlock\_api\_up.h:68
 
 ```c
-#define _raw_spin_lock_irqsave(lock, flags)	__LOCK_IRQSAVE(lock, flags)
+#define _raw_spin_lock_irqsave(lock, flags)     __LOCK_IRQSAVE(lock, flags)
 ```
 
 > /include/linux/spinlock\_api\_up.h:39
@@ -59,10 +59,10 @@ SMP 환경인 경우 `flags` 에 `_raw_spin_lock_irqsave` 의 결과값을 저�
 > /include/linux/irqflags.h:199
 
 ```c
-#define local_irq_save(flags)					\
-	do {							\
-		raw_local_irq_save(flags);			\
-	} while (0)
+#define local_irq_save(flags)                                   \
+        do {                                                    \
+                raw_local_irq_save(flags);                      \
+        } while (0)
 ```
 
 `local_irq_save` 은 `raw_local_irq_save` 을 실행합니다.
@@ -70,11 +70,11 @@ SMP 환경인 경우 `flags` 에 `_raw_spin_lock_irqsave` 의 결과값을 저�
 > /include/linux/irqflags.h:138
 
 ```c
-#define raw_local_irq_save(flags)			\
-	do {						\
-		typecheck(unsigned long, flags);	\
-		flags = arch_local_irq_save();		\
-	} while (0)
+#define raw_local_irq_save(flags)                       \
+        do {                                            \
+                typecheck(unsigned long, flags);        \
+                flags = arch_local_irq_save();          \
+        } while (0)
 ```
 
 `raw_local_irq_save` 는 `flags` 인자에 `arch_local_irq_save` 의 실행값을 저장하는 역할을 합니다.
@@ -97,7 +97,7 @@ static __always_inline unsigned long arch_local_irq_save(void)
 ```c
 static __always_inline unsigned long arch_local_save_flags(void)
 {
-	return native_save_fl();
+        return native_save_fl();
 }
 ```
 
@@ -108,20 +108,20 @@ static __always_inline unsigned long arch_local_save_flags(void)
 ```c
 extern __always_inline unsigned long native_save_fl(void)
 {
-	unsigned long flags;
+        unsigned long flags;
 
-	/*
-	 * "=rm" is safe here, because "pop" adjusts the stack before
-	 * it evaluates its effective address -- this is part of the
-	 * documented behavior of the "pop" instruction.
-	 */
-	asm volatile("# __raw_save_flags\n\t"
-		     "pushf ; pop %0"
-		     : "=rm" (flags)
-		     : /* no input */
-		     : "memory");
+        /*
+         * "=rm" is safe here, because "pop" adjusts the stack before
+         * it evaluates its effective address -- this is part of the
+         * documented behavior of the "pop" instruction.
+         */
+        asm volatile("# __raw_save_flags\n\t"
+                     "pushf ; pop %0"
+                     : "=rm" (flags)
+                     : /* no input */
+                     : "memory");
 
-	return flags;
+        return flags;
 }
 ```
 
@@ -145,7 +145,7 @@ extern __always_inline unsigned long native_save_fl(void)
 #ifndef CONFIG_INLINE_SPIN_LOCK_IRQSAVE
 unsigned long __lockfunc _raw_spin_lock_irqsave(raw_spinlock_t *lock)
 {
-	return __raw_spin_lock_irqsave(lock);
+        return __raw_spin_lock_irqsave(lock);
 }
 EXPORT_SYMBOL(_raw_spin_lock_irqsave);
 #endif
@@ -158,22 +158,22 @@ EXPORT_SYMBOL(_raw_spin_lock_irqsave);
 ```c
 static inline unsigned long __raw_spin_lock_irqsave(raw_spinlock_t *lock)
 {
-	unsigned long flags;
+        unsigned long flags;
 
-	local_irq_save(flags);
-	preempt_disable();
-	spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
-	/*
-	 * On lockdep we dont want the hand-coded irq-enable of
-	 * do_raw_spin_lock_flags() code, because lockdep assumes
-	 * that interrupts are not re-enabled during lock-acquire:
-	 */
+        local_irq_save(flags);
+        preempt_disable();
+        spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
+        /*
+         * On lockdep we dont want the hand-coded irq-enable of
+         * do_raw_spin_lock_flags() code, because lockdep assumes
+         * that interrupts are not re-enabled during lock-acquire:
+         */
 #ifdef CONFIG_LOCKDEP
-	LOCK_CONTENDED(lock, do_raw_spin_trylock, do_raw_spin_lock);
+        LOCK_CONTENDED(lock, do_raw_spin_trylock, do_raw_spin_lock);
 #else
-	do_raw_spin_lock_flags(lock, &flags);
+        do_raw_spin_lock_flags(lock, &flags);
 #endif
-	return flags;
+        return flags;
 }
 ```
 
@@ -187,9 +187,9 @@ static inline unsigned long __raw_spin_lock_irqsave(raw_spinlock_t *lock)
 static inline void
 do_raw_spin_lock_flags(raw_spinlock_t *lock, unsigned long *flags) __acquires(lock)
 {
-	__acquire(lock);
-	arch_spin_lock_flags(&lock->raw_lock, *flags);
-	mmiowb_spin_lock();
+        __acquire(lock);
+        arch_spin_lock_flags(&lock->raw_lock, *flags);
+        mmiowb_spin_lock();
 }
 ```
 
@@ -199,7 +199,7 @@ do_raw_spin_lock_flags(raw_spinlock_t *lock, unsigned long *flags) __acquires(lo
 
 ```c
 #ifndef arch_spin_lock_flags
-#define arch_spin_lock_flags(lock, flags)	arch_spin_lock(lock)
+#define arch_spin_lock_flags(lock, flags)       arch_spin_lock(lock)
 #endif
 ```
 

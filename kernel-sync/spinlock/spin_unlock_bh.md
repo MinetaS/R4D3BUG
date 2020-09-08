@@ -7,14 +7,14 @@
 ```c
 static __always_inline void spin_unlock_bh(spinlock_t *lock)
 {
-	raw_spin_unlock_bh(&lock->rlock);
+        raw_spin_unlock_bh(&lock->rlock);
 }
 ```
 
 > /include/linux/spinlock.h:291
 
 ```c
-#define raw_spin_unlock_bh(lock)	_raw_spin_unlock_bh(lock)
+#define raw_spin_unlock_bh(lock)        _raw_spin_unlock_bh(lock)
 ```
 
 
@@ -24,7 +24,7 @@ static __always_inline void spin_unlock_bh(spinlock_t *lock)
 > /include/linux/spinlock\_api\_up.h:78
 
 ```c
-#define _raw_spin_unlock_bh(lock)		__UNLOCK_BH(lock)
+#define _raw_spin_unlock_bh(lock)               __UNLOCK_BH(lock)
 ```
 
 `_raw_spin_unlock_bh` 매크로가 `__UNLOCK_BH` 으로 치환됩니다.
@@ -44,35 +44,35 @@ static __always_inline void spin_unlock_bh(spinlock_t *lock)
 ```c
 void __local_bh_enable_ip(unsigned long ip, unsigned int cnt)
 {
-	WARN_ON_ONCE(in_irq());
-	lockdep_assert_irqs_enabled();
+        WARN_ON_ONCE(in_irq());
+        lockdep_assert_irqs_enabled();
 #ifdef CONFIG_TRACE_IRQFLAGS
-	local_irq_disable();
+        local_irq_disable();
 #endif
-	/*
-	 * Are softirqs going to be turned on now:
-	 */
-	if (softirq_count() == SOFTIRQ_DISABLE_OFFSET)
-		lockdep_softirqs_on(ip);
-	/*
-	 * Keep preemption disabled until we are done with
-	 * softirq processing:
-	 */
-	preempt_count_sub(cnt - 1);
+        /*
+         * Are softirqs going to be turned on now:
+         */
+        if (softirq_count() == SOFTIRQ_DISABLE_OFFSET)
+                lockdep_softirqs_on(ip);
+        /*
+         * Keep preemption disabled until we are done with
+         * softirq processing:
+         */
+        preempt_count_sub(cnt - 1);
 
-	if (unlikely(!in_interrupt() && local_softirq_pending())) {
-		/*
-		 * Run softirq if any pending. And do it in its own stack
-		 * as we may be calling this deep in a task call stack already.
-		 */
-		do_softirq();
-	}
+        if (unlikely(!in_interrupt() && local_softirq_pending())) {
+                /*
+                 * Run softirq if any pending. And do it in its own stack
+                 * as we may be calling this deep in a task call stack already.
+                 */
+                do_softirq();
+        }
 
-	preempt_count_dec();
+        preempt_count_dec();
 #ifdef CONFIG_TRACE_IRQFLAGS
-	local_irq_enable();
+        local_irq_enable();
 #endif
-	preempt_check_resched();
+        preempt_check_resched();
 }
 EXPORT_SYMBOL(__local_bh_enable_ip);
 ```
@@ -99,7 +99,7 @@ EXPORT_SYMBOL(__local_bh_enable_ip);
 #ifndef CONFIG_INLINE_SPIN_UNLOCK_BH
 void __lockfunc _raw_spin_unlock_bh(raw_spinlock_t *lock)
 {
-	__raw_spin_unlock_bh(lock);
+        __raw_spin_unlock_bh(lock);
 }
 EXPORT_SYMBOL(_raw_spin_unlock_bh);
 #endif
@@ -112,9 +112,9 @@ EXPORT_SYMBOL(_raw_spin_unlock_bh);
 ```c
 static inline void __raw_spin_unlock_bh(raw_spinlock_t *lock)
 {
-	spin_release(&lock->dep_map, _RET_IP_);
-	do_raw_spin_unlock(lock);
-	__local_bh_enable_ip(_RET_IP_, SOFTIRQ_LOCK_OFFSET);
+        spin_release(&lock->dep_map, _RET_IP_);
+        do_raw_spin_unlock(lock);
+        __local_bh_enable_ip(_RET_IP_, SOFTIRQ_LOCK_OFFSET);
 }
 ```
 

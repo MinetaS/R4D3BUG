@@ -9,18 +9,18 @@ lock을 release 하면서 플래그 레지스터를 복원합니다.
 ```c
 static __always_inline void spin_unlock_irqrestore(spinlock_t *lock, unsigned long flags)
 {
-	raw_spin_unlock_irqrestore(&lock->rlock, flags);
+        raw_spin_unlock_irqrestore(&lock->rlock, flags);
 }
 ```
 
 > /include/linux/spinlock.h:286
 
 ```c
-#define raw_spin_unlock_irqrestore(lock, flags)		\
-	do {							\
-		typecheck(unsigned long, flags);		\
-		_raw_spin_unlock_irqrestore(lock, flags);	\
-	} while (0)
+#define raw_spin_unlock_irqrestore(lock, flags)         \
+        do {                                                    \
+                typecheck(unsigned long, flags);                \
+                _raw_spin_unlock_irqrestore(lock, flags);       \
+        } while (0)
 ```
 
 `raw_spin_unlock_irqrestore` 는 `_raw_spin_unlock_irqrestore` 를 호출합니다.
@@ -33,7 +33,7 @@ static __always_inline void spin_unlock_irqrestore(spinlock_t *lock, unsigned lo
 
 ```c
 #define _raw_spin_unlock_irqrestore(lock, flags) \
-					__UNLOCK_IRQRESTORE(lock, flags)
+                                        __UNLOCK_IRQRESTORE(lock, flags)
 ```
 
 > /include/linux/spinlock\_api\_up.h:55
@@ -70,7 +70,7 @@ static __always_inline void spin_unlock_irqrestore(spinlock_t *lock, unsigned lo
 ```c
 static __always_inline void arch_local_irq_restore(unsigned long flags)
 {
-	native_restore_fl(flags);
+        native_restore_fl(flags);
 }
 ```
 

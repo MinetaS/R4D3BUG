@@ -85,9 +85,9 @@ Atomic value을 사용하거나, endianness에 따라 locked, pending, tail 필�
 
 아래 목록은 spinlock과 관련한 동작을 하는 함수 또는 매크로입니다. spinlock은 acquired, released 두 가지 상태를 가지고 있으며 특정 thread가 해당 spinlock을 acquire 한 경우, 다른 thread가 동일한 spinlock을 acquire 하기 위해서는 해당 spinlock이 release 될 때까지 기다려야 합니다. 
 
-* `spin_lock_init` : 주어진 spinlock을 unlocked 상태로 초기화합니다.
-* `spin_lock` : 
-* `spin_lock_bh` : 
+* `spin_lock_init` : spinlock을 unlocked 상태로 초기화합니다.
+* `spin_lock` : spinlock을 acquire 합니다.
+* `spin_lock_bh` : spinlock을 acquire 합니다. 
 * `spin_lock_irq` :
 * `spin_lock_irqsave` :
 * `spin_unlock` :

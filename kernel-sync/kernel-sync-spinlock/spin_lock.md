@@ -197,30 +197,16 @@ static __always_inline void queued_spin_lock(struct qspinlock *lock)
 }
 ```
 
-x86에서 `queued_spin_lock_slowpath` 의 정의는 따로 있습니다. 하지만 마찬가지로 내용이 범위를 벗어나는 만큼 여기서 자세히 다루지는 않고 코드만 올리도록 하겠습니다.
+queued\_spin\_lock은 Queued Spinlock 에서 이어서 설명합니다.
 
-> /arch/x86/include/asm/qspinlock.h:48
 
-```c
-static inline void queued_spin_lock_slowpath(struct qspinlock *lock, u32 val)
-{
-	pv_queued_spin_lock_slowpath(lock, val);
-}
-```
-
-> /arch/x86/include/asm/paravirt.h:653
-
-```c
-static __always_inline void pv_queued_spin_lock_slowpath(struct qspinlock *lock,
-							u32 val)
-{
-	PVOP_VCALL2(lock.queued_spin_lock_slowpath, lock, val);
-}
-```
 
 ## Conclusion
 
-SMP: `spin_lock` &gt; `_raw_spin_lock` &gt; `__raw_spin_lock` &gt; `do_raw_spin_lock` &gt; `arch_spin_lock` &gt; `queued_spin_lock` &gt; `queued_spin_lock_slowpath` &gt; `pv_queued_spin_lock_slowpath` &gt; PVOP\_VCALL
+SMP: `spin_lock` &gt; `_raw_spin_lock` &gt; `__raw_spin_lock` &gt; `do_raw_spin_lock` &gt; `arch_spin_lock` &gt; `queued_spin_lock` &gt; ...
 
-UP: `spin_lock` &gt; `_raw_spin_lock` &gt; `__LOCK` &gt; `___LOCK` 
+UP: `spin_lock` &gt; `_raw_spin_lock` &gt; `__LOCK` 
+
+* 프로세서가 1개인 경우 `spin_lock`은 preemption을 비활성화하는 것 외에 다른 동작을 하지는 않습니다.
+* 다중 프로세서 환경인 경우 `spin_lock` 은 `queued_spin_lock` 을 사용합니다.
 

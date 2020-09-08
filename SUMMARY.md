@@ -14,5 +14,6 @@
     * [spin\_unlock\_bh](kernel-sync/spinlock/spin_unlock_bh.md)
     * [spin\_unlock\_irq](kernel-sync/spinlock/spin_unlock_irq.md)
     * [spin\_unlock\_irqrestore](kernel-sync/spinlock/spin_unlock_irqrestore.md)
+    * [spin\_is\_locked](kernel-sync/spinlock/spin_is_locked.md)
   * [Queued Spinlock](kernel-sync/queued-spinlock.md)
 

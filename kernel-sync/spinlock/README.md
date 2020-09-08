@@ -8,17 +8,17 @@ spinlock은 Linux 커널에서 사용하는 저수준 동기화 기법입니다.
 
 ```c
 typedef struct spinlock {
-	union {
-		struct raw_spinlock rlock;
+        union {
+                struct raw_spinlock rlock;
 
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
 # define LOCK_PADSIZE (offsetof(struct raw_spinlock, dep_map))
-		struct {
-			u8 __padding[LOCK_PADSIZE];
-			struct lockdep_map dep_map;
-		};
+                struct {
+                        u8 __padding[LOCK_PADSIZE];
+                        struct lockdep_map dep_map;
+                };
 #endif
-	};
+        };
 } spinlock_t;
 ```
 
@@ -28,13 +28,13 @@ kernel config에 CONFIG\_DEBUG\_LOCK\_ALLOC이 있으면 `__padding`과 `dep_map
 
 ```c
 typedef struct raw_spinlock {
-	arch_spinlock_t raw_lock;
+        arch_spinlock_t raw_lock;
 #ifdef CONFIG_DEBUG_SPINLOCK
-	unsigned int magic, owner_cpu;
-	void *owner;
+        unsigned int magic, owner_cpu;
+        void *owner;
 #endif
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
-	struct lockdep_map dep_map;
+        struct lockdep_map dep_map;
 #endif
 } raw_spinlock_t;
 ```
@@ -45,35 +45,35 @@ typedef struct raw_spinlock {
 
 ```c
 typedef struct qspinlock {
-	union {
-		atomic_t val;
+        union {
+                atomic_t val;
 
-		/*
-		 * By using the whole 2nd least significant byte for the
-		 * pending bit, we can allow better optimization of the lock
-		 * acquisition for the pending bit holder.
-		 */
+                /*
+                 * By using the whole 2nd least significant byte for the
+                 * pending bit, we can allow better optimization of the lock
+                 * acquisition for the pending bit holder.
+                 */
 #ifdef __LITTLE_ENDIAN
-		struct {
-			u8	locked;
-			u8	pending;
-		};
-		struct {
-			u16	locked_pending;
-			u16	tail;
-		};
+                struct {
+                        u8      locked;
+                        u8      pending;
+                };
+                struct {
+                        u16     locked_pending;
+                        u16     tail;
+                };
 #else
-		struct {
-			u16	tail;
-			u16	locked_pending;
-		};
-		struct {
-			u8	reserved[2];
-			u8	pending;
-			u8	locked;
-		};
+                struct {
+                        u16     tail;
+                        u16     locked_pending;
+                };
+                struct {
+                        u8      reserved[2];
+                        u8      pending;
+                        u8      locked;
+                };
 #endif
-	};
+        };
 } arch_spinlock_t;
 ```
 
@@ -87,11 +87,13 @@ Atomic value을 사용하거나, endianness에 따라 locked, pending, tail 필�
 
 * `spin_lock_init` : spinlock을 unlocked 상태로 초기화합니다.
 * `spin_lock` : spinlock을 acquire 합니다.
-* `spin_lock_bh` : spinlock을 acquire 합니다. 
-* `spin_lock_irq` :
-* `spin_lock_irqsave` :
-* `spin_unlock` :
-* `spin_unlock_bh` :
+* `spin_lock_bh` : spinlock을 acquire 합니다. Lock이 걸려있는 동안 SoftIRQ 처리는 무시됩니다.
+* `spin_lock_irq` : spinlock을 acquire 합니다. 외부 인터럽트가 무시됩니다.
+* `spin_lock_irqsave` : spinlock을 acquire 합니다. 외부 인터럽트를 무시하며 플래그 레지스터를 유지합니다.
+* `spin_unlock` : spinlock을 release 합니다.
+* `spin_unlock_bh` : spinlock을 release 합니다. Lock을 해제하면서, pending 상태에 있던 SoftIRQ를 처리합니다.
+* `spin_unlock_irq` : spinlock 을 release 합니다. 외부 인터럽트를 다시 처리하도록 합니다.
+* `spin_unlock_irqrestore` : spinlock을 release 합니다. 플래그 레지스터를 복원합니다.
 * `spin_is_locked` :
 
 

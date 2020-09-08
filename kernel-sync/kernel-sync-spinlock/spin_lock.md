@@ -134,7 +134,7 @@ config DEBUG_LOCK_ALLOC
 # define lockdep_init()				do { } while (0)
 ```
 
-위의 매크는 `CONFIG_LOCKDEP` 가 false 일 때 정의됩니다. 따라서  `CONFIG_DEBUG_LOCK_ALLOC` 이 정의되지 않았다면 `spin_acquire` 매크로는 아무 동작도 하지 않는 빈 코드로 바뀌게 됩니다. 마찬가지로, 여기서는 디버깅 루틴을 살펴보지 않기 때문에 실제 `lock_acquire` 함수의 동작에 대해서는 설명을 건너뛰겠습니다.
+위의 매크로는 `CONFIG_LOCKDEP` 가 false 일 때 정의됩니다. 따라서  `CONFIG_DEBUG_LOCK_ALLOC` 이 정의되지 않았다면 `spin_acquire` 매크로는 아무 동작도 하지 않는 빈 코드로 바뀌게 됩니다. 마찬가지로, 여기서는 디버깅 루틴을 살펴보지 않기 때문에 실제 `lock_acquire` 함수의 동작에 대해서는 설명을 건너뛰겠습니다.
 
 `__raw_spin_lock` 의 마지막 줄에는 `LOCK_CONTENDED` 매크로가 사용되었습니다.
 

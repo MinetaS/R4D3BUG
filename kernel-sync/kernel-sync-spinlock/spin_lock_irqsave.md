@@ -2,7 +2,7 @@
 
 ## spin\_lock\_irqsave
 
-`spin_lock_irq` 와 비슷하지만 인터럽트가 걸렸을 때 이전의 상태를 보존합니다.
+`spin_lock_irq` 와 비슷하지만 인터럽트가 걸렸을 때 플래그 레지스터의 상태를 보존합니다.
 
 > /include/linux/spinlock.h:381
 
@@ -79,16 +79,15 @@ SMP 환경인 경우 `flags` 에 `_raw_spin_lock_irqsave` 의 결과값을 저�
 
 `raw_local_irq_save` 는 `flags` 인자에 `arch_local_irq_save` 의 실행값을 저장하는 역할을 합니다.
 
-> /include/x86/include/asm/lockspin.h:118
+> /include/x86/include/asm/irqflags.h:118
 
 ```c
 static __always_inline unsigned long arch_local_irq_save(void)
 {
-	unsigned long flags = arch_local_save_flags();
-	arch_local_irq_disable();
-	return flags;
+        unsigned long flags = arch_local_save_flags();
+        arch_local_irq_disable();
+        return flags;
 }
-#else
 ```
 
 `arch_local_irq_save` 함수는 `arch_local_save_flags` 를 호출해 결과값을 `flags` 변수에 저장하고, `arch_local_irq_disable` 을 호출해 인터럽트를 무시합니다.
@@ -126,7 +125,7 @@ extern __always_inline unsigned long native_save_fl(void)
 }
 ```
 
-`native_save_fl` 함수는 `pushf` 와 `pop` 명령어를 사용해 EFLAGS 레지스터 값을 `flags` 변수에 저장하고 해당 값을 리턴합니다.
+`native_save_fl` 함수는 `pushf` 와 `pop` 명령어를 사용해 플래 레지스터 값을 `flags` 변수에 저장하고 해당 값을 리턴합니다.
 
 
 
@@ -178,7 +177,7 @@ static inline unsigned long __raw_spin_lock_irqsave(raw_spinlock_t *lock)
 }
 ```
 
-`__raw_spin_lock_irqsave` 함수입니다. 먼저 `local_irq_save` 로 `flags` 에 EFLAGS 레지스터 값을 저장하고 `preempt_disable` 로 preemption을 비활성화합니다.
+`__raw_spin_lock_irqsave` 함수입니다. 먼저 `local_irq_save` 로 `flags` 에 플래 레지스터 값을 저장하고 `preempt_disable` 로 preemption을 비활성화합니다.
 
 `CONFIG_LOCKDEP` 이 정의되어 있으면 `do_raw_spin_lock` 함수를 호출하고, 그렇지 않은 경우 `do_raw_spin_lock_flags` 함수를 호출합니다. 여기선 디버깅 관련 configuration을 무시하므로 `do_raw_spin_lock_flags` 를 살펴보겠습니다.
 
@@ -214,5 +213,5 @@ SMP: `spin_lock_irqsave` &gt; `_raw_spin_lock_irqsave` &gt; `__raw_spin_lock_irq
 
 UP: `spin_lock_irq` &gt; `_raw_spin_lock_irq` &gt; `__LOCK_IRQSAVE` &gt; `__LOCK` 
 
-* EFLAGS/RFLAGS 레지스터 값을 유지하기 위해, 현재의 FLAGS 레지스터 값이 리턴됩니다. 이 값은 이후 `spin_unlock_irqrestore` 에서 레지스를 복원할 때 사용됩니다.
+* EFLAGS/RFLAGS 레지스터 값을 유지하기 위해, 현재의 플래 레지스터 값이 리턴됩니다. 이 값은 이후 `spin_unlock_irqrestore` 에서 레지스터를 복원할 때 사용됩니다.
 

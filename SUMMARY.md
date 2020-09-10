@@ -16,4 +16,5 @@
     * [spin\_unlock\_irqrestore](kernel-sync/spinlock/spin_unlock_irqrestore.md)
     * [spin\_is\_locked](kernel-sync/spinlock/spin_is_locked.md)
   * [Queued Spinlock](kernel-sync/queued-spinlock.md)
+* [CVE-2017-7533](cve-2017-7533.md)
 
